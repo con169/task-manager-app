@@ -5,7 +5,6 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [taskName, setTaskName] = useState('');
 
-  // Fetch tasks from the backend API
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -13,21 +12,20 @@ function App() {
   const fetchTasks = () => {
     axios.get('http://localhost:3000/tasks')
       .then(response => {
-        setTasks(response.data);  // Update the tasks state with the fetched data
+        setTasks(response.data);
       })
       .catch(error => {
         console.error('Error fetching tasks:', error);
       });
   };
 
-  // Handle form submission for creating a new task
   const handleSubmit = (e) => {
-    e.preventDefault();  // Prevent the page from refreshing
+    e.preventDefault();
     if (taskName) {
       axios.post('http://localhost:3000/tasks', { name: taskName })
         .then(response => {
-          setTasks([...tasks, response.data]);  // Add the new task to the state
-          setTaskName('');  // Clear the input field
+          setTasks([...tasks, response.data]);
+          setTaskName('');
         })
         .catch(error => {
           console.error('Error creating task:', error);
@@ -35,11 +33,33 @@ function App() {
     }
   };
 
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:3000/tasks/${id}`)
+      .then(() => {
+        setTasks(tasks.filter(task => task._id !== id));
+      })
+      .catch(error => {
+        console.error('Error deleting task:', error);
+      });
+  };
+
+  const handleComplete = (id, completed) => {
+    axios.patch(`http://localhost:3000/tasks/${id}`, { completed })
+      .then(response => {
+        const updatedTasks = tasks.map(task =>
+          task._id === id ? { ...task, completed: response.data.completed } : task
+        );
+        setTasks(updatedTasks);
+      })
+      .catch(error => {
+        console.error('Error updating task:', error);
+      });
+  };
+
   return (
     <div>
       <h1>Task Manager</h1>
 
-      {/* Task Creation Form */}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -50,11 +70,14 @@ function App() {
         <button type="submit">Add Task</button>
       </form>
 
-      {/* Task List */}
       <ul>
         {tasks.map(task => (
           <li key={task._id}>
             {task.name} - {task.completed ? "Completed" : "Incomplete"}
+            <button onClick={() => handleComplete(task._id, !task.completed)}>
+              {task.completed ? "Mark Incomplete" : "Mark Complete"}
+            </button>
+            <button onClick={() => handleDelete(task._id)}>Delete</button>
           </li>
         ))}
       </ul>
