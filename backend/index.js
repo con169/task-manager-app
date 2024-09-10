@@ -1,14 +1,18 @@
 // Load environment variables from the .env file
 require('dotenv').config();
 
+const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const taskRoutes = require('./routes/taskRoutes');  // Import task routes
 const app = express();
 
-// Set up the port to use either the value from the .env file or a default of 3000
-const PORT = process.env.PORT || 3000;
 
+
+// Set up the port to use either the value from the .env file or a default of 3000
+const PORT = process.env.PORT || 3500;
+
+app.use(cors());
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 
@@ -31,4 +35,6 @@ mongoose
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+
+
 });

@@ -10,7 +10,7 @@ function App() {
   }, []);
 
   const fetchTasks = () => {
-    axios.get('http://localhost:3000/tasks')
+    axios.get('http://localhost:3500/tasks')
       .then(response => {
         setTasks(response.data);
       })
@@ -22,7 +22,7 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (taskName) {
-      axios.post('http://localhost:3000/tasks', { name: taskName })
+      axios.post('http://localhost:3500/tasks', { name: taskName })
         .then(response => {
           setTasks([...tasks, response.data]);
           setTaskName('');
@@ -34,7 +34,7 @@ function App() {
   };
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:3000/tasks/${id}`)
+    axios.delete(`http://localhost:3500/tasks/${id}`)
       .then(() => {
         setTasks(tasks.filter(task => task._id !== id));
       })
@@ -44,7 +44,7 @@ function App() {
   };
 
   const handleComplete = (id, completed) => {
-    axios.patch(`http://localhost:3000/tasks/${id}`, { completed })
+    axios.patch(`http://localhost:3500/tasks/${id}`, { completed })
       .then(response => {
         const updatedTasks = tasks.map(task =>
           task._id === id ? { ...task, completed: response.data.completed } : task
